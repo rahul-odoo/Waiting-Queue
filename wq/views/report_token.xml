@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<template id="report_token_document">
+    <t t-call="report.external_layout">
+        <div class="page text-center">
+            <div class="oe_structure"/>
+            <div class="row">
+                <div>
+                    <strong>Welcome to the <strong t-field="doc.service_id"/></strong> 
+                </div>
+            </div>
+            <div class="row">
+                <p>Please Join the line for Adults,</p>
+                <p>Your Number is :</p>
+                <h1><strong t-field="doc.unique_token"/></h1>
+                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % 
+                ('QR', doc.unique_token, 200, 200)"/>
+            </div>
+        </div>
+    </t>
+</template>
+
+
+<template id="report_token">
+    <t t-call="report.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="wq.report_token_document"/>
+        </t>
+    </t>
+</template>
+</data>
+</openerp>

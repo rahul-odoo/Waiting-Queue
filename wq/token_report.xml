@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report 
+            id="report_service_token"
+            string="Quotation / Order"
+            model="wq.services.tokens" 
+            report_type="qweb-pdf"
+            file="wq.report_token" 
+            name="wq.report_token" 
+            paperformat="wq.paperformat_tokenreceipt"
+        />
+    </data>
+</openerp>

@@ -1,0 +1,177 @@
+<openerp>
+    <data>
+
+      <template id="assets_Wq" inherit_id="website.assets_frontend" name="Assets">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/website_wq/static/css/my.css"/>
+           <script type="text/javascript" src="/website_event/static/src/js/website_event.js"></script>
+        </xpath>
+      </template>
+      
+        <template id="index" name="Service List">
+            <t t-call="website.layout">
+                <t t-set="additional_title">Waiting Queue</t>
+                <div id="wrap">
+                  <div class="oe_structure"/>
+                  <div class="container">
+                    <div class="row text-center">
+                        <h2>Services</h2>
+                    </div>
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <t t-foreach="services" t-as="service">
+                            <div class="col-sm-4 mb32">
+                                <div class="well well-sm">
+                                    <div>
+                                        <a t-attf-href="/services/#{slug(service)}">
+                                            <img class="img-responsive oe_slides_channel_thumbnail" t-attf-src="/web/image/wq.services/#{service.id}/image_medium" t-attf-alt="service.name"/>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <div class="caption">
+                                            <span class="label label-default pull-right"><t t-esc="service.name"/></span>
+                                            <h4><t t-esc="service.name"/></h4>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p t-if="service.service_start"  class="text-muted">
+                                            <i class="fa fa-calendar"/> Start date : <t t-esc="service.service_start"/>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p>
+                                            <t t-call="website_wq.service_details1"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>  
+                  </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="service_details" name="Services">
+           <t t-call="website.layout">
+                <t t-set="title">Service Detail</t>
+                <div class="oe_structure">
+                    <div class="container">
+                      <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                          <t t-call="website.publish_management">
+                              <t t-set="object" t-value="service"/>
+                              <t t-set="publish_edit" t-value="True"/>
+                              <t t-set="action" t-value="'service.service_list_action'"/>
+                          </t>
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                      </div>
+
+                      <div class="row">
+                         <div class="col-md-7 col-sm-offset-1">
+                          <div t-field="service.image" t-field-options='{"widget": "image"}'/>
+                         </div>
+
+                         <div class="col-md-4">
+                           <h2><t t-esc="service.name"/></h2>
+                           <p t-if="service.service_start" class="text-muted">
+                              <i class="fa fa-calendar"/> Start date : <t t-esc="service.service_start"/>
+                           </p>
+                           <t t-call="website_wq.service_details1"/>
+                           <a class="btn btn-primary" href="/services/operator" target="_blank">
+                               <i class="fa fa-print"></i> Operator View
+                           </a>
+                         </div>
+                       </div>
+                    </div>
+                </div>
+              </t>
+            </template>
+
+            <template id="service_details1" name="Services">
+              <form id="registration_form" t-attf-action="/services/#{slug(service)}/registration/new" method="post">
+                <div class="clearfix">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <button type="submit" class="btn btn-primary btn-block a-submit" t-attf-id="#{service.id}"> <i class="fa fa-arrow-circle-right "/> Join Now</button>      
+              </div>
+              </form>
+            </template>
+
+
+            <template id="token_details" name="Token Generate">
+              <div id="modal_attendees_registration" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg">
+                <form id="attendee_registration" t-attf-action="/services/#{slug(service)}/registration/confirm" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title" id="myModalLabel"><strong>Token</strong></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="text-center page-header">
+                                <h1>
+                                    WELCOME TO THE 
+                                    <br/><b><t t-esc="service.name"/> Service</b>
+                                </h1>
+                                <hr></hr>
+                            </div>
+                            <div>
+                                Please Join the line for Adults.
+                            </div>
+                            <div class="col-md-8 col-md-offset-2">
+                            <div class="row">
+                                <label for="email">Email:*</label>
+                                <input type="email" class="form-control" t-attf-name="email" id="email" placeholder="Enter email"/>
+                            </div>
+                            <div class="row">
+                                <label for="name">Name:*</label>
+                                <input type="name" class="form-control" id="name" t-attf-name="name" placeholder="Enter Name"/>
+                            </div>
+                            <div class="row">
+                                <label for="name">Phone:*</label>
+                                <input type="phone" class="form-control" id="phone" t-attf-name="phone" placeholder="Enter Phone"/>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                          <div class="pull-left">
+                              <button type="submit" class="btn btn-primary">Join</button> or
+                              <a class="js_goto_event" style="cursor: pointer;"> Cancel</a>
+                          </div>
+                      </div>
+                  </div>
+                </form>
+              </div>
+        </div>
+            </template>
+
+
+      <template id="registration_complete" name="Registration Completed">
+        <t t-call="website.layout">
+          <div class="container">
+            <h3>We are glad to confirm your Join to our Service <b> <t t-esc="service.name"/> </b></h3>
+            <h3>You are in Queue and your Token Number is: </h3>
+             <h1><b><t t-esc="unique_token.unique_token"/></b></h1>
+             <a class="btn btn-success btn-lg" href="/services/print" target="_blank">
+                  <i class="fa fa-print"></i> Print
+              </a>
+          </div>
+        </t>
+      </template>
+
+
+      <template id="operator" name="Operator View">
+         <t t-call="website.layout">
+            <div class="container">
+            
+            </div>
+         </t>
+      </template>
+
+    </data>
+</openerp>

@@ -1,0 +1,70 @@
+<openerp>
+    <data>
+      <template id="assets_Wq" inherit_id="website.assets_frontend" name=" Assets">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/wq/static/css/my.css"/>
+            <link rel="stylesheet" href="/wq/static/css/bootstrap.css"/>
+        </xpath>
+      </template>
+
+        <template id="index">
+            <t t-call="website.layout">
+                <t t-set="title">Waiting Queue</t>
+               <!--  <img class="img img-responsive" src="/wq/static/back.jpg" style="width:500px"/> -->
+                <div class="oe_structure" style="background-color: lightblue;">
+                    <div class="container" >
+                            <a href="/services">Our Services</a>
+                        <br>
+                       </br>
+                        <t t-foreach="services" t-as="service">
+                            <div class="media-body row">
+                                <h4 class="media-heading">
+                                    <a itemprop="url" t-att-class="service.state == 'done' and 'text-success'" t-attf-href="/service/#{ slug(service) }"><span t-field="service.name"> </span></a>
+                                </h4>
+
+                                <div><i class="fa fa-location-arrow"> </i><span> <t t-esc="'%s,%s' % (service.partner_id.city, service.partner_id.state_id and service.partner_id.state_id.name or '')"/></span></div>
+                                <div>
+                                    <i class="fa fa-clock-o"></i> <span t-esc="service.service_start"> </span> <i>to</i> <span t-esc="service.service_end"> </span>
+                                </div>
+
+                                <div>
+                                    <i class="fa fa-users"></i>
+                                    <span t-esc="service.intake_capacity-service.total_token"></span> <i> / </i> <span t-esc="service.intake_capacity"></span><span> Available
+                                    </span>
+                                </div>
+                                <br/>
+                            </div>
+                        </t>
+                      
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="service_details">
+           <t t-call="website.layout">
+                <t t-set="title">Waiting Queue</t>
+                <div class="oe_structure">
+                    <div class="container">
+                          <div>Service Name:<t t-esc="service.name"/>
+                          <button type="button" class="btn btn-primary1 btn-smsssss">Join</button> 
+                          </div>
+                           <!-- <div><t t-esc="'%s,%s,%s' % (service.partner_id.city, service.partner_id.street ,service.partner_id.street and service.partner_id.state_id.name or '')"/></div> -->
+                           <div>Address:<t t-esc="service.partner_id.street"/></div><br />
+                           <div>City:<t t-esc="service.partner_id.city"/></div><br />
+                           <div>State:<t t-esc="service.partner_id.state_id.name"/></div><br />
+                         <!--   <div>Zip Code:<t t-esc="service.partner_id.zip"/></div><br /> -->
+                            <div>Country:<t t-esc="service.partner_id.country_id.name"/></div><br />
+                         <!--   <div>Website:<t t-esc="service.partner_id.website"/></div><br /> -->
+                           <div>Contact:<t t-esc="service.partner_id.phone"/></div><br />
+                           <div>Mobile:<t t-esc="service.partner_id.mobile"/></div><br />
+                          <!--  <div>FAX:<t t-esc="service.partner_id.fax"/></div><br /> -->
+                           <div>Email:<t t-esc="service.partner_id.email"/></div><br />
+                          
+                    </div>
+                 </div>
+            </t>
+        </template>
+
+    </data>
+</openerp>

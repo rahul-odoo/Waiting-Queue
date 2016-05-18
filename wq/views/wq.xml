@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<openerp>
+    <data>
+        
+        <!-- service token-->
+
+        <record model="ir.ui.view" id="token_form_view">
+            <field name="name">Token</field>
+            <field name="model">wq.services.tokens</field>
+            <field name="arch" type="xml">
+                <form string="Token Form">
+                    <header>
+                        <button string="Grant" attrs="{'invisible':[('status', 'in', ['granted', 'served', 'revoked'])]}" name="action_issue" type="object"/>
+
+                        <button string="Serve" attrs="{'invisible':[('status', 'in', ['draft','served','revoked'])]}" name="action_serve" type="object"/>
+                        
+                        <button string="Revoke" name="action_revoked" type="object" attrs="{'invisible':[('status', '=', 'revoked')]}"/>
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name='unique_token'/></h1>
+                        </div>
+                        <group>
+                           <group>
+                                <field name="service_id"/>
+                                <field name="service_starttime" attrs="{'invisible': [('status', '=', 'draft')]}"/>
+                                <field name="expiry_datetime"/>
+                                <field name="issued_to"/>
+                        </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--Token Tree View -->
+        <record model="ir.ui.view" id="view_token_tree">
+            <field name="name">wq.services.tokens.tree</field>
+            <field name="model">wq.services.tokens</field>
+            <field name="arch" type="xml">
+                <tree string="Tokens">
+                    <field name="unique_token"/>
+                    <field name="service_starttime"/>
+                    <field name="issued_to"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--search -->
+        <record id="token_view_search" model="ir.ui.view">
+        <field name="name">wq.services.tokens.search</field>
+        <field name="model">wq.services.tokens</field>
+        <field name="arch" type="xml">
+            <search string="Token">
+                <field name="service_id"/>
+                <field name="unique_token" string="Token Name" filter_domain="[('unique_token', 'ilike', self)]"/>
+                <separator/>
+                <filter string="Issued" name="issued" domain="[('status','=','issued')]" help="Token in Issued state"/>
+                <filter string="Served" name="served" domain="[('status','=','served')]" help="Tokens in Served state"/>
+                <group expand="0" string="Group By">
+                    <filter string="Service" context="{'group_by': 'service_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+        <record id="action_tokens" model="ir.actions.act_window">
+            <field name="name">Tokens</field>
+            <field name="res_model">wq.services.tokens</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_service_id': active_id, 'default_service_id': active_id}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to add new Token.
+                </p>
+                <p>
+                    Odoo helps you efficiently organize your Tokens.
+                </p>
+            </field>
+        </record>
+
+   
+   <!-- Category views starts from here -->
+    <record id="service_category_view_form" model="ir.ui.view">
+        <field name="name">service.category.form</field>
+        <field name="model">service.category</field>
+        <field name="arch" type="xml">
+            <form string="Service Categories">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="parent_id"/>
+                        <field name="sequence"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="service_category_view_tree" model="ir.ui.view">
+        <field name="name">service.category.tree</field>
+        <field name="model">service.category</field>
+        <field name="arch" type="xml">
+            <tree string="Service Categories" editable="top">
+                <field name="name"/>
+                <field name="parent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="service_category_action" model="ir.actions.act_window">
+        <field name="name">Category</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to define a new category.
+            </p>
+            <p>
+                Categories are used to browse your Service easily.
+            </p>
+        </field>
+    </record>
+
+       <record model="ir.ui.view" id="service_form_view">
+            <field name="name">Service: form</field>
+            <field name="model">wq.services</field>
+            <field name="arch" type="xml">
+                <form string="Services">
+                    <header>
+                        <button string="Confirm" states="draft" name="action_confirm" type="object"/>
+                        <button string="Done" states="confirm" name="action_done" type="object"/>
+                        <button string="Call Next" states="confirm" name="action_call_next" type="object"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="%(wq.action_tokens)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-suitcase"
+                                help="All Tokens related to Service">
+                                <field name="total_token" widget="statinfo" string="Tokens"/>
+                            </button>
+                        </div>
+                        <field name="image" widget='image' class="oe_avatar" options='{"preview_image":"image_medium"}'/>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="Ex. Passport, Bank, Education ..."/></h1>
+                            <field name="category_ids" widget="many2many_tags" placeholder="Category..."/>
+                        </div>
+                        <group>
+                           <group>
+                                <field name="partner_id"/>
+                                <field name="service_start"/>
+                                <field name="service_end"/>
+                          </group>
+                          <group string="">
+                                <field name="intake_capacity"/>
+                          </group>
+                        </group>
+                      <notebook>
+                        <!--<page string="Token Issued">
+                          <field name="tokens"/>
+                        </page-->
+
+                        <page string="Rules">
+                            <field name="rules"/>
+                        </page>
+                      </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+<!-- list view-->
+    <record id="waiting_queue_list" model="ir.ui.view">
+        <field name="name">Services: list</field>
+        <field name="model">wq.services</field>
+        <field name="arch" type="xml">
+        <tree string="waiting queue services">
+            <field name="name"/>
+            <field name="service_start"/>
+            <field name="service_end"/>
+            <field name="rules"/>
+      </tree>
+        </field>
+    </record>
+
+        <!-- search view -->
+          <record model="ir.ui.view" id="service_search_view">
+            <field name="name">service.search</field>
+            <field name="model">wq.services</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    
+                </search>
+            </field>
+        </record>
+
+
+
+         <!-- calendar view -->
+        <record model="ir.ui.view" id="service_calendar_view">
+            <field name="name">service.calendar</field>
+            <field name="model">wq.services</field>
+            <field name="arch" type="xml">
+                <calendar string="Service Calendar" date_start="service_start"
+                          date_stop="end_date">
+                    <field name="name"/>
+                </calendar>
+            </field>
+        </record>
+
+      <!-- kanban view -->
+  <record model="ir.ui.view" id="view_openacad_service_kanban">
+            <field name="name">openacad.service.kanban</field>
+            <field name="model">wq.services</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="state"/>
+                    <field name="image_medium"/>
+                    <field name="total_token"/>
+                    <field name="html_color"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.html_color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                                <div class="o_dropdown_kanban dropdown" groups="base.group_user">
+                                    <a class="dropdown-toggle btn" data-toggle="dropdown" href="#" >
+                                        <span class="fa fa-bars fa-lg"/>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                        <t t-if="widget.editable"><li><a type="edit">Edit Service</a></li></t>
+                                        <t t-if="widget.deletable"><li><a type="delete">Delete</a></li></t>
+                                        <li><ul class="oe_kanban_colorpicker" data-field="html_color"/></li>
+                                    </ul>
+                                </div>    
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_tags_section">
+                                    <field name="category_ids"/>
+                                </div>
+                                <div class="o_kanban_image">
+                                    <img t-att-src="kanban_image('wq.services', 'image_medium', record.image_medium.raw_value)"/>
+                                </div>
+                                <div>
+                                    <h4><b><field name="name"/></b></h4>
+                                    <h5>
+                                        <a name="%(wq.action_tokens)d" type="action">
+                                            <t t-esc="record.total_token.raw_value"/> Total Tokens
+                                        </a>
+                                    </h5>
+                                </div>
+                            </div>
+                         </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- window action -->
+        <!--
+            The following tag is an action definition for a "window action",
+            that is an action opening a view or a set of views
+        -->
+        <record model="ir.actions.act_window" id="service_list_action">
+            <field name="name">Services</field>
+            <field name="res_model">wq.services</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,list,form,calendar</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                Click to define a new Service.
+            </p>
+            <p>
+                Here, You can define different Services.
+            </p>
+            </field>
+        </record>
+
+
+<!-- top level menu: no parent -->
+        <menuitem id="main_wq_menu" name="Waiting Queue"/>
+       
+        <menuitem id="wq_menu" name="Waiting Queue"
+                  parent="main_wq_menu"/>
+        
+        <menuitem id="services_menu" name="Services" parent="wq_menu"
+                  action="service_list_action"/>
+
+        <menuitem action="service_category_action" id="service_category_menu" parent="wq_menu" sequence="100" />
+</data>
+</openerp>

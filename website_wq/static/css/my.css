@@ -1,0 +1,25 @@
+
+.top_covered_image {
+    object-fit: cover;
+    object-position: top;
+}
+
+img.oe_slides_channel_thumbnail {
+    .top_covered_image();
+    height: 250px;
+    width: 100%
+}
+
+.btn-primary1 {
+  color: #fff;
+  margin-left: 44px;
+
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+
+.jumbotron {
+    background-image: url("/wq/static/src/img/bg1.jpg");
+    height: 450px;
+    background-color: transparent !important;
+}
